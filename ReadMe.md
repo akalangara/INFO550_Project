@@ -18,7 +18,7 @@ BiocManager::install(c("GenomicRanges", "GenomicFeatures", "BSgenome", "BSgenome
 installed_pkgs <- row.names(installed.packages())
 pkgs <- c("tinytex", "kableExtra", "tidyverse","devtools")
 for(p in pkgs){
-	if(!(p %in% install_pkgs)){
+	if(!(p %in% installed_pkgs)){
 		install.packages(p, repos = "http://cran.us.r-project.org")
 	}
 }
