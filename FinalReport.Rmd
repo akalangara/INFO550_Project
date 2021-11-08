@@ -1,0 +1,99 @@
+---
+title: "BIOS 555 Final Report"
+author: "Alisha Kalangara"
+output:
+  pdf_document: default
+  fig_caption: yes
+header-includes:
+- \usepackage[font=bf]{caption}
+- \captionsetup[table]{skip=5pt}
+- \usepackage{booktabs}
+- \setlength{\abovecaptionskip}{2pt}
+- \setlength{\belowcaptionskip}{-12pt}
+- \usepackage{float}
+- \floatplacement{figure}{H}
+---
+```{r, include = FALSE}
+here::i_am('FinalReport.Rmd')
+knitr::opts_knit$set(root.dir=here::here())
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(kableExtra)
+library(dplyr)
+```
+
+## Introduction
+The global burden of influenza is large and expansive, as almost no country does not experience the flu$.^1$ While it has been studied for hundreds of years, one aspect of the flu continues to baffle researchers: seasonality$.^2$ Given the consistent rise in cases during the winter months of temperate regions, it was proposed that cool and dry conditions seen in these winter months, help to drive influenza pandemics$.^1$ This, however, discounts the pattern of flu seen in tropical regions where flu can be present nearly year round under hot, and wet conditions : the exact opposite from temperate regions$.^2$ Beyond this apparent environmental conditions paradox, it has also been posited that seasonality could be due to differences in the viruses ability to survive$.^2$  
+
+This report aims to examine this idea of the virus’s capability to survive by comparing the nucleotide sequences of Hemagglutinin (HA) genes from countries of different latitudes (a northern hemisphere temperate country, a southern hemisphere temperate country, and a tropical country). The HA gene codes for a glycoprotein responsible for cell entry and, as such, is under selection. While the protein is not directly related to the stability of the virus in environmental conditions, cell entry is important to survival. By comparing these sequences, we wish to determine whether particular positions in the sequence can explain the variation in the sequences from temperate and tropical regions.  
+
+## Methods
+The coding regions for HA sequences were initially downloaded from the NCBI influenza
+database using the following query (Figure 1). Canada and Australia were sources of
+temperate north and south sequences, respectively. India was a source of tropical
+sequences. Dates ranges were informed using knowledge on 2017-2018 flu seasons for
+each country$.^{3,4,5}$ Because there were too few sequences for the 2017-2018 flu season for India, the 2018-2019 flu season was included for the country. Each country’s results were saved as separate FASTA files.
+
+```{r fig1, echo=FALSE, out.width="75%", fig.cap="Query Parameters to Obtain FASTA Sequence Files", fig.align='center'}
+knitr::include_graphics(here::here("Figs", "Query.png"))
+```
+
+From there country identifiers were added to the sequence names, a composite FASTA sequence file was created, and a reference sequence file was created using an Indian sequence.  
+
+These files were used to construct an alignment using Rsubreads where, of the 664 total sequence, 644 were able to be aligned. Additionally, a BAM file was produced. The BAM file was sorted, indexed, and brought into R where Bioconductor was used to parse through the sequences.  
+
+An initial attempt was made to explore the variation between the sequences using simple probability. Using Bioconductor, a frequency and probability position matrix were constructed where the nucleotide frequency or probability was characterized at each position. Utilizing these, a sequence logo plot was generated for the positions that showed greater than 10% variation.  
+
+To see whether sequence variation was due to being from separate regions, a PCA analysis was conducted$.^6$ An initial matrix consisting of nucleotides was constructed using rows for every sequence and columns for every position. As PCA analysis cannot be conducted using categorical variables (nucleotide type), this matrix was expanded to include dummy variables such that rather than 1 position variable, there were 4 dummy variables noting whether a position contained A,G,C, or T.  
+
+Once the PCA analysis was conducted, a PC plot was constructed to visualize how sequences from each country varied and to determine positions of greatest interest (those that contributed to the PCs). This comparison was done by evaluating the loading scores for the PC1 axis at the top 30 positions that contributed to variation.  
+
+## Results & Discussion
+Figure 2. below is the sequence logo plot for positions that were found to have greater than 10% variation. Out of the 1209 positions, there were 26 positions that met this criteria. For most positions we see that variation is between 2 nucleotides and these are usually purines:purines, and pyridamines:pyridamines variation, though there are a few exceptions. This indicates that there is not much of a changein DNA chemical structure. These could however, potentially result in drastically different amino acid sequences.
+
+```{r fig2, echo=FALSE, fig.cap="Sequence Logo for Positions that had >10% Variation"}
+knitr::include_graphics(here::here("Figs", "seq_logo.png"))
+```
+
+In looking at solely the position frequency and probability, we do not distinguish the unique frequencies for each type of sequence (temperate or tropical) and do not take into account the country from which the sequence came. To further explore how the variation is related to temperate or tropical sequence type, a PCA analysis was conducted. Figure 3 shows the results of the PCA analysis below.
+
+```{r fig3, echo=FALSE, out.width="80%", fig.cap="PC Plot Showing Variation Among Sequences by Country", fig.align='center'}
+knitr::include_graphics(here::here("Figs", "pca_plot.png"))
+```
+
+PC1 and PC2 account for 4.9% and 4.1% of the variation respectively. Because this amount is fairly small, the variation between sequences of different countries is not determined by singular nucleotide positions considered independently. We do, however, see some groupings of the sequences. Notably, the Indian sequences remained fairly clustered while the temperate regions (Canada and Australia) overlapped with one another and with the tropical (India) sequences. Some temperate sequences were also seen to be isolated from other sequences as well (isolated Australian and Canadian clusters).  
+
+In general, the separation between temperate and tropical sequences occurs along PC1 (horizontally). As such the loading scores for each position were analyzed for PC1. Table 1. below gives the loading scores for each of the top 30 positions that contributed to PC1. The letter following the position number, indicates the nucleotide present at that location.
+
+```{r tab1}
+top30<-read.csv(here::here("Processed_Data","top_30.csv"))
+top30<-cbind(rank = c(seq(1,30)), top30)
+t1 <- kable(top30, format = "latex", col.names = c("Rank","Position","Loading Score"), caption = "Loading Scores for Top 30 Positions", booktabs = TRUE) %>%
+  kable_styling(latex_options = "HOLD_position")
+t1
+```
+
+It was noted that all of the positions in Table 1 appear as part of the most variable positions (Figure 2) indicating that there was little within-region variation and that variation between sequences came from between regions (Canada vs Australia vs India). Additionally, it was noted that position pairs, positions that appear multiple times in Table 1 but with different nucleotides, had opposite signs for loading scores. Since there appears to be a general trend of temperate sequences separating from tropical sequences on the x axis, opposite loading score signs imply that these positions, "push" a sequence to be more tropical or temperate, because they contribute in opposite directions depending on the nucleotide present at the position.
+
+Ultimately, while results are mildly suggestive that some positions may play a role in the difference between temperate and tropical influenza sequences, these contributions are likely very minimal. A shortcoming of this analysis includes that it is only limited to the HA coding region. Another important glycoprotein (NA), among other parts of the influenza genome could also be analyzed. Additionally, this analysis considered individual positions of nucleotides independently. It may be that amino acid changes may be more consequential for study and that multiple dependent nucleotide positions should be considered. Lastly, only 3 countries were considered in this study. Depending on surveillance capacities, other countries should be analyzed to more accurately address this question.  
+
+## References
+\setlength{\parindent}{-0.2in}
+\setlength{\leftskip}{0.2in}
+\setlength{\parskip}{7pt}
+\noindent
+
+$^1$ Viboud, Cécile, Wladimir J. Alonso, and Lone Simonsen. "Influenza in Tropical Regions." *PLoS Medicine* 3, no. 4 (2006). doi:10.1371/journal.pmed.0030089.  
+
+$^2$ Tamerius, James, Martha I. Nelson, Steven Z. Zhou, Cécile Viboud, Mark A. Miller, and Wladimir J. Alonso. "Global Influenza Seasonality: Reconciling Patterns across Temperate and Tropical Regions." *Environmental Health Perspectives* 119, no. 4 (November 19, 2010): 439-45. doi:10.1289/ehp.1002383.  
+
+$^3$ "Flu Trends in Australia." Healthdirect. September 2020. Accessed October 24, 2021. https://www.healthdirect.gov.au/flu-trends-in-australia.  
+  
+$^4$ "FluWatch Annual Report: 2018-19 Influenza Season." Annual Influenza Reports. March 25, 2021. Accessed October 24, 2021.   https://www.canada.ca/en/public-health/services/publications/diseases-conditions/fluwatch/2018-2019/annual-report.html.  
+  
+$^5$ Koul, Parvaiz A., Shobha Broor, Siddhartha Saha, John Barnes, Catherine Smith, Michael Shaw, Mandeep Chadha, and Renu B. Lal. "Differences in Influenza Seasonality by Latitude, Northern India." *Emerging Infectious Diseases* 20, no. 10 (2014): 1746-749. doi:10.3201/eid2010.140431.  
+  
+$^6$ Starmer, J (2019) pca_demo.R[Source Code].https://github.com/StatQuest/pca_demo.  
+   
