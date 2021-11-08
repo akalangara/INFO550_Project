@@ -10,7 +10,7 @@ Instructions for installation of samtools can be found [here](http://www.sthda.c
 
    
 ## Restore Package Environment
-Prior to executing the analysis, navigate to the `Final_Project` directory and start an R session
+Prior to executing the analysis, navigate to the `INFO550_Project` directory and start an R session
 
 ``` bash
 R
@@ -28,13 +28,13 @@ q()
 ```
 
 ## Execute Analysis
-To execute the analysis, navigate to the `Final_Project` directory. You can then run 
+To execute the analysis, navigate to the `INFO550_Project` directory. You can then run 
 
 ``` bash
 make
 ```
 
-This will create in the `Final_Project` directory, a file called `FinalReport.pdf` which contains a report of the findings.
+This will create in the `INFO550_Project` directory, a file called `FinalReport.pdf` which contains a report of the findings.
 
 Please note the process takes about 2-3 minutes as the analysis involves many packages and large files.
 
