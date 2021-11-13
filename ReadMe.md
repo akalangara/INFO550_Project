@@ -6,13 +6,15 @@ Influenza shows different seasonal patterns depending on the location. Tropical 
 
 For this analysis it is necessary to have R and samtools installed.
 
-Instructions for installation of samtools can be found [here](http://www.sthda.com/english/wiki/install-samtools-on-unix-system)
+You can use the following to install samtools
+```bash
+sudo apt install samtools
+```
 
-   
 ## Restore Package Environment
 Prior to executing the analysis, navigate to the `INFO550_Project` directory and start an R session
 
-``` bash
+```bash
 R
 ```
 In the R session, run the following to restore the package environment
