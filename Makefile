@@ -1,6 +1,6 @@
 # rule for making final report
-FinalReport.pdf: Figs/seq_logo.png Figs/pca_plot.png Processed_Data/top_30.csv FinalReport.Rmd
-	Rscript -e "rmarkdown::render('FinalReport.Rmd', quiet = TRUE)"
+FinalReport: Figs/seq_logo.png Figs/pca_plot.png Processed_Data/top_30.csv FinalReport.Rmd
+	Rscript -e "rmarkdown::render('FinalReport.Rmd', output_file = 'Output/FinalReport.pdf', quiet = TRUE)"
 
 # rule for making the seq logo plot
 Figs/seq_logo.png: Processed_Data/all_flu_reads_sorted.bam R/03_make_seqLogo.R
@@ -38,4 +38,4 @@ Processed_Data/flu_ref.fa: Raw_Data/IND_flu_reads.fa Raw_Data/AUS_flu_reads.fa R
 clean:
 	rm -r Processed_Data/* && \
 	rm Figs/seq_logo.png Figs/pca_plot.png && \
-	rm FinalReport.pdf
+	rm Output/FinalReport.pdf
