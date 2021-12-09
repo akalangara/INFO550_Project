@@ -26,18 +26,18 @@ Influenza shows different seasonal patterns depending on the location. Tropical 
   ### Running Container to Execute Analysis
   To run the container and be able to access the report you can use the following pseudocode. You will need to fill in the filepath and output folder name.
   ```bash
-  docker run -v ~/path/to/your/output_folder_name:/project/Output -it akalangara/info550_project
+  docker run -v ~/path/to/your/output_folder_name:/project/Output akalangara/info550_project
   ```
   For the example given previously, this is what the command would look like.
   ```bash
-  docker run -v ~/Downloads/Output:/project/output -it akalangara/info550_project
+  docker run -v ~/Downloads/Output:/project/Output akalangara/info550_project
   ```
-  Please note that generating the report takes around 10 minutes as the analysis involves many packages and large files. Once this code is run, the container will close and the report will be in your local `Output` directory.
+  Please note that generating the report takes around 10 minutes as the analysis involves many packages and large files. Once this code is run, the container will close and the report will be in your local `Output` directory. As the code is running, a number of warnings regarding packages will appear. These can be ignored.
 
   ### Running Container Interactively
   If you do not want to automatically run the analysis, you can use the following psuedocode to overide the entry point.
   ```bash
-  docker run -v ~/path/to/your/output_folder_name:/project/output -it akalangara/info550_project /bin/bash
+  docker run -v ~/path/to/your/output_folder_name:/project/Output -it akalangara/info550_project /bin/bash
   ```
   If you want to produce the full report, you can run `make` from the `/project` directory. You can also reset to raw data as noted below.
 </details>
